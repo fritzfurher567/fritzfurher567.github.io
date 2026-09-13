@@ -809,18 +809,37 @@
   });
 
   var grid = document.getElementById('contribGrid');
-  var weeks = 52, total = 0;
-  for (var w = 0; w < weeks; w++){
-    for (var d2 = 0; d2 < 7; d2++){
-      var box = document.createElement('div');
-      var r = Math.random();
-      var level = r > 0.93 ? 4 : r > 0.8 ? 3 : r > 0.6 ? 2 : r > 0.4 ? 1 : 0;
-      box.className = 'cbox' + (level ? ' l'+level : '');
-      if (level) total += level * 2 + Math.floor(Math.random()*3);
-      grid.appendChild(box);
-    }
-  }
-  document.getElementById('contribCount').textContent = total.toLocaleString();
+  var githubUsername = 'fritzfurher567'; 
+
+  // Fetch data from a free proxy that structures the graph data
+  fetch(`https://github-contributions-api.deno.dev/${githubUsername}.json`)
+    .then(response => response.json())
+    .then(data => {
+      var total = 0;
+      // The API returns all your history; slice the last 52 weeks to fit your grid
+      var weeksData = data.contributions.slice(-52); 
+
+      for (var w = 0; w < weeksData.length; w++){
+        for (var d2 = 0; d2 < weeksData[w].length; d2++){
+          var box = document.createElement('div');
+          var dayData = weeksData[w][d2];
+          
+          // The API conveniently provides an intensity level (0-4), perfectly matching your existing CSS
+          var level = dayData.intensity;
+          
+          box.className = 'cbox' + (level ? ' l'+level : '');
+          
+          // Add the actual exact contribution count instead of the random math
+          total += dayData.contributionCount;
+          
+          grid.appendChild(box);
+        }
+      }
+      document.getElementById('contribCount').textContent = total.toLocaleString();
+    })
+    .catch(error => {
+      console.error('Failed to load GitHub contributions:', error);
+    });
 
   // ---------- SCROLL REVEAL ----------
   function runReveal(){
