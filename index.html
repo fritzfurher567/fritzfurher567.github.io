@@ -811,30 +811,30 @@
   var grid = document.getElementById('contribGrid');
   var githubUsername = 'fritzfurher567'; 
 
-  // Fetch data from a free proxy that structures the graph data
-  fetch(`https://github-contributions-api.deno.dev/${githubUsername}.json`)
-    .then(response => response.json())
+  // Using a highly reliable, CORS-friendly API that requires no proxies
+  fetch(`https://github-contributions-api.jogruber.de/v4/${githubUsername}?y=last`)
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return response.json();
+    })
     .then(data => {
       var total = 0;
-      // The API returns all your history; slice the last 52 weeks to fit your grid
-      var weeksData = data.contributions.slice(-52); 
+      
+      // The API returns a flat array of days. We slice the last 364 days (52 weeks * 7 days) 
+      // to perfectly fit your existing HTML grid layout.
+      var daysToShow = data.contributions.slice(-364); 
 
-      for (var w = 0; w < weeksData.length; w++){
-        for (var d2 = 0; d2 < weeksData[w].length; d2++){
-          var box = document.createElement('div');
-          var dayData = weeksData[w][d2];
-          
-          // The API conveniently provides an intensity level (0-4), perfectly matching your existing CSS
-          var level = dayData.intensity;
-          
-          box.className = 'cbox' + (level ? ' l'+level : '');
-          
-          // Add the actual exact contribution count instead of the random math
-          total += dayData.contributionCount;
-          
-          grid.appendChild(box);
-        }
-      }
+      daysToShow.forEach(function(dayData) {
+        var box = document.createElement('div');
+        
+        // This API returns a 'level' from 0 to 4, which flawlessly matches your CSS classes
+        var level = dayData.level;
+        box.className = 'cbox' + (level ? ' l'+level : '');
+        
+        total += dayData.count;
+        grid.appendChild(box);
+      });
+
       document.getElementById('contribCount').textContent = total.toLocaleString();
     })
     .catch(error => {
