@@ -23,6 +23,15 @@
       chips: ['Luau', 'UI systems', 'Roblox Studio']
     },
     {
+      company: 'Kuro browser', role: 'Founder and Lead Developer',
+      from: '2026', to: 'Present', tag: 'Remote', current: true,
+      points: [
+        'A free, privacy-focused web browser customizeable to the last pixel',
+        'Built on Zen Browser and Firefox.'
+      ],
+      chips: ['C++', 'JavaScript', 'HTML', 'CSS', 'Python','Rust', 'Fluent', 'Ollama', 'Firefox']
+    },
+    {
       company: 'Nexus', role: 'Founder and lead developer',
       from: '2026', tag: 'Discord bot',
       points: [
